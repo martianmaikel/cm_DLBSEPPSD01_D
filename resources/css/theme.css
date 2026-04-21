@@ -1,0 +1,114 @@
+/* ClashMonitor Design System — extracted from clashmonitor-styleguide.html */
+
+:root {
+    /* ── CORE PALETTE ── */
+    --black:        #080A07;
+    --surface-0:    #0C0F0B;
+    --surface-1:    #111510;
+    --surface-2:    #181D16;
+    --surface-3:    #1F261C;
+    --surface-4:    #252E21;
+
+    --green-dim:    #1A3018;
+    --green-mid:    #2D5426;
+    --green-base:   #3D7A32;
+    --green-bright: #52A844;
+    --green-neon:   #6FD65A;
+    --green-glow:   #8FE87C;
+
+    --amber:        #C97B1A;
+    --amber-bright: #F59E0B;
+    --red-alert:    #C0392B;
+    --red-bright:   #E74C3C;
+    --blue-intel:   #1A4A6B;
+    --blue-bright:  #2980B9;
+
+    --text-primary:   #D4E8CF;
+    --text-secondary: #8AAD83;
+    --text-muted:     #4A6344;
+    --text-dim:       #2D3F2B;
+
+    --border-subtle:  #1A2618;
+    --border-mid:     #243320;
+    --border-active:  #3D7A32;
+    --border-bright:  #52A844;
+
+    /* ── TYPOGRAPHY ── */
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-ui:      'Rajdhani', sans-serif;
+    --font-mono:    'Share Tech Mono', monospace;
+
+    /* ── SPACING ── */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+    --sp-12: 48px; --sp-16: 64px;
+
+    /* ── EFFECTS ── */
+    --glow-green:  0 0 8px rgba(82,168,68,0.4), 0 0 20px rgba(82,168,68,0.15);
+    --glow-red:    0 0 8px rgba(231,76,60,0.5), 0 0 20px rgba(231,76,60,0.2);
+    --glow-amber:  0 0 8px rgba(245,158,11,0.4), 0 0 16px rgba(245,158,11,0.15);
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+    );
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-1); }
+::-webkit-scrollbar-thumb { background: var(--green-mid); }
+::-webkit-scrollbar-thumb:hover { background: var(--green-base); }
+
+/* ── HIGH CONTRAST MODE (dark, boosted readability) ── */
+.high-contrast {
+    --black:        #020302;
+    --surface-0:    #060806;
+    --surface-1:    #0A0D09;
+    --surface-2:    #10140E;
+    --surface-3:    #161B14;
+    --surface-4:    #1C221A;
+
+    --green-dim:    #1E3A1A;
+    --green-mid:    #3A6E30;
+    --green-base:   #4CA03C;
+    --green-bright: #6FD65A;
+    --green-neon:   #8FFA76;
+    --green-glow:   #AAFFAA;
+
+    --amber:        #E89520;
+    --amber-bright: #FFB829;
+    --red-alert:    #E8503E;
+    --red-bright:   #FF6B5A;
+    --blue-intel:   #2B7AB8;
+    --blue-bright:  #48A8E8;
+
+    --text-primary:   #F2F8F0;
+    --text-secondary: #C0DEB8;
+    --text-muted:     #7AA870;
+    --text-dim:       #4A6844;
+
+    --border-subtle:  #1E3018;
+    --border-mid:     #305828;
+    --border-active:  #4CA03C;
+    --border-bright:  #6FD65A;
+
+    --glow-green:  0 0 10px rgba(111,214,90,0.5), 0 0 24px rgba(111,214,90,0.2);
+    --glow-red:    0 0 10px rgba(255,107,90,0.5), 0 0 24px rgba(255,107,90,0.2);
+    --glow-amber:  0 0 10px rgba(255,184,41,0.5), 0 0 20px rgba(255,184,41,0.2);
+}
+
+/* Kill scanlines in high contrast — they reduce readability */
+.high-contrast body::before,
+.high-contrast::before {
+    display: none !important;
+}

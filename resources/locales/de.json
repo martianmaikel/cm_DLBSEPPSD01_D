@@ -1,0 +1,231 @@
+{
+    "common": {
+        "appName": "ClashMonitor",
+        "loading": "Laden...",
+        "error": "Ein Fehler ist aufgetreten",
+        "noData": "Keine Daten verfügbar",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "back": "Zurück",
+        "search": "Suchen",
+        "filter": "Filtern",
+        "refresh": "Aktualisieren"
+    },
+    "nav": {
+        "world": "Welt",
+        "admin": "Admin",
+        "events": "Ereignisse",
+        "methodology": "Methodik",
+        "conflicts": "Konflikte",
+        "actors": "Akteure",
+        "graph": "Graph"
+    },
+    "map": {
+        "events": "Ereignisse",
+        "hotzones": "Aktive Hotzones",
+        "noEvents": "Keine Ereignisse in dieser Region",
+        "clickContinent": "Klicke auf einen Kontinent",
+        "clickCountry": "Klicke auf ein Land für Details"
+    },
+    "event": {
+        "title": "Ereignis",
+        "severity": "Schweregrad",
+        "confidence": "Konfidenz",
+        "status": "Status",
+        "category": "Kategorie",
+        "source": "Quelle",
+        "occurred": "Eingetreten",
+        "corroborations": "Bestätigungen",
+        "thread": "Konflikt-Thread",
+        "aiGenerated": "KI-generiert",
+        "rawContent": "Rohdaten",
+        "coordinates": "Koordinaten",
+        "country": "Land",
+        "region": "Region"
+    },
+    "status": {
+        "unverified": "Unbestätigt",
+        "corroborated": "Bestätigt (2 Quellen)",
+        "confirmed": "Bestätigt (3+ Quellen)",
+        "disputed": "Angefochten",
+        "retracted": "Zurückgezogen",
+        "pending_classification": "Klassifizierung ausstehend"
+    },
+    "category": {
+        "airstrike": "Luftangriff",
+        "artillery": "Artillerie",
+        "troop_movement": "Truppenbewegung",
+        "humanitarian": "Humanitär",
+        "infrastructure": "Infrastruktur",
+        "diplomatic": "Diplomatisch",
+        "naval": "Marine",
+        "cyber": "Cyber",
+        "protest": "Protest",
+        "other": "Sonstiges"
+    },
+    "dashboard": {
+        "title": "GLOBALER KONFLIKTMONITOR",
+        "subtitle": "Echtzeit-Konfliktbeobachtung und Aufklärung",
+        "staleData": "Daten möglicherweise veraltet",
+        "ticker": {
+            "breaking": "EILMELDUNG",
+            "empty": "Keine aktiven Warnungen"
+        },
+        "feed": {
+            "title": "Konflikte",
+            "noThreads": "Keine Konflikt-Threads in der aktuellen Ansicht",
+            "eventCount": "Ereignisse"
+        },
+        "filters": {
+            "region": "Region",
+            "timeRange": "Zeitraum",
+            "last24h": "Letzte 24h",
+            "last48h": "Letzte 48h",
+            "last7d": "Letzte 7 Tage",
+            "allTime": "Gesamter Zeitraum"
+        },
+        "briefing": {
+            "title": "TÄGLICHES INTEL-BRIEFING",
+            "noData": "Kein Briefing verfügbar",
+            "archive": "Archiv ansehen",
+            "keyDevelopments": "Wichtigste Entwicklungen",
+            "conflictBreakdown": "Konfliktübersicht",
+            "events": "Ereignisse",
+            "avgSeverity": "Ø Schweregrad",
+            "statistics": "Statistiken",
+            "generatedBy": "Erstellt von"
+        },
+        "globe": {
+            "loading": "Globe wird geladen...",
+            "noEvents": "Keine Ereignisse anzuzeigen"
+        },
+        "detail": {
+            "moreDetails": "Alle Details anzeigen"
+        }
+    },
+    "methodology": {
+        "title": "METHODIK",
+        "subtitle": "Wie ClashMonitor Konfliktdaten verarbeitet, verifiziert und darstellt",
+        "ingestion": {
+            "title": "DATENERFASSUNG",
+            "description": "ClashMonitor überwacht kontinuierlich mehrere Datenquellen auf konfliktbezogene Berichte. RSS-Feeds werden in konfigurierbaren Intervallen abgefragt (Standard: 10 Minuten), während Telegram-Kanäle und hochprioritäre OSINT-Quellen häufiger überprüft werden (Standard: 5 Minuten). Jedes eingehende Element wird anhand von Titel, Quelle und ungefährem Zeitstempel gehasht und gegen einen Deduplizierungscache geprüft.",
+            "sources": "Unterstützte Quellentypen umfassen RSS/Atom-Feeds, Telegram-Kanäle und manuelle Einreichungen. Jede Quelle hat ein konfigurierbares Abrufintervall und einen Zuverlässigkeitswert."
+        },
+        "classification": {
+            "title": "KI-KLASSIFIKATION",
+            "description": "Jedes neue Ereignis wird von einem großen Sprachmodell in einem einzigen strukturierten Aufruf verarbeitet. Das Modell gibt ein JSON-Objekt zurück mit: Kategorie, Schweregrad (1-10), Konfidenz (1-10), extrahierte Entitäten, geografischer Kontext und einer neutralen Zusammenfassung.",
+            "note": "Klassifikation und Entitätsextraktion erfolgen in einem Durchgang. Alle KI-generierten Inhalte sind als solche gekennzeichnet. Klassifikationsfehler werden abgefangen und das Rohereignis wird zur automatischen Wiederholung gespeichert."
+        },
+        "geolocation": {
+            "title": "GEOLOKALISIERUNG",
+            "description": "Wenn der Klassifikationsschritt einen spezifischen Ortsnamen zurückgibt, wird dieser über den Nominatim-Dienst zu Koordinaten aufgelöst. Als Fallback wird die Länderebene verwendet. Alle Koordinaten werden als PostGIS-Geometrie für effiziente räumliche Abfragen gespeichert."
+        },
+        "corroboration": {
+            "title": "BESTÄTIGUNG",
+            "description": "Wenn ein neues Ereignis gespeichert wird, wird es sofort mit allen Ereignissen der letzten 24 Stunden verglichen — durch Embedding-Ähnlichkeit, Entitätsüberlappung und Länder-/Kategorie-Abgleich. Bei einer Übereinstimmung aus einer anderen Quellenfamilie wird eine Bestätigungsverknüpfung erstellt.",
+            "families": "Die Gruppierung nach Quellenfamilien ist entscheidend. Ein Google-News-Artikel, der auf Reuters verlinkt, zählt als Reuters, nicht als unabhängige Quelle."
+        },
+        "threading": {
+            "title": "KONFLIKT-THREADING",
+            "description": "Nach der Bestätigung wird jedes Ereignis für die Zuordnung zu einem Konflikt-Thread bewertet — einer benannten, sich entwickelnden Erzählung, die verwandte Ereignisse über die Zeit gruppiert."
+        },
+        "reconciliation": {
+            "title": "ABGLEICH",
+            "description": "Ein periodischer Hintergrundjob überprüft Ereignisse der letzten 48 Stunden, um verspätete Bestätigungen zu erfassen. Der Abgleich klassifiziert nicht neu; er aktualisiert nur Bestätigungsverknüpfungen und Statusaktualisierungen."
+        },
+        "verification": {
+            "title": "VERIFIZIERUNGSSTATUS",
+            "description": "Jedes Ereignis hat einen Verifizierungsstatus, der den Grad der Bestätigung widerspiegelt:",
+            "automation": "Der Status kann nur automatisch voranschreiten (unbestätigt → bestätigt → vollständig bestätigt). Änderungen zu angefochten oder zurückgezogen erfordern manuelle Aktion."
+        }
+    },
+    "legal": {
+        "impressum": "Impressum",
+        "impressumSubtitle": "Angaben gemäß § 5 DDG",
+        "privacy": "Datenschutz",
+        "privacySubtitle": "Datenschutzerklärung gemäß DSGVO",
+        "operator": "Angaben gemäß § 5 DDG",
+        "owner": "Inhaber",
+        "contact": "Kontakt",
+        "taxNumber": "Steuernummer",
+        "vatId": "Umsatzsteuer-Identifikationsnummer",
+        "disputeResolution": "Streitschlichtung"
+    },
+    "social": {
+        "followX": "Folge uns auf X",
+        "joinReddit": "Reddit beitreten",
+        "joinTelegram": "Telegram beitreten"
+    },
+    "admin": {
+        "dashboard": "Dashboard",
+        "sources": "Quellen",
+        "events": "Ereignisse",
+        "threads": "Threads",
+        "pipeline": "Pipeline-Status",
+        "addSource": "Quelle hinzufügen",
+        "editSource": "Quelle bearbeiten",
+        "markDisputed": "Als angefochten markieren",
+        "markRetracted": "Als zurückgezogen markieren",
+        "reassignThread": "Thread zuweisen",
+        "login": "Admin-Login",
+        "tokenPlaceholder": "Admin-Token eingeben",
+        "authenticate": "Authentifizieren",
+        "subscribers": "Abonnenten",
+        "newsletterHistory": "Newsletter-Verlauf",
+        "sendTest": "Test senden",
+        "filterStatus": "Nach Status filtern",
+        "filterLocale": "Nach Sprache filtern",
+        "searchEmail": "E-Mail suchen"
+    },
+    "cta": {
+        "morningBriefing": "Morning Briefing",
+        "getInInbox": "Dieses Briefing per E-Mail erhalten",
+        "dailyAt7": "Täglich um 07:00 Ortszeit",
+        "subscribe": "Abonnieren",
+        "stayInformed": "Informiert bleiben",
+        "neverMiss": "Kein kritisches Ereignis verpassen",
+        "subscribeToBriefing": "Morning Briefing abonnieren",
+        "briefingCta": "Tägliche Konflikt-Intelligence um 07:00 — kostenlos.",
+        "eventAlertCta": "Alerts für ähnliche Ereignisse erhalten"
+    },
+    "newsletter": {
+        "pageTitle": "Morning Briefing Newsletter",
+        "tagline": "Tägliche Konflikt-Intelligence um 07:00 Ortszeit in Ihrem Postfach.",
+        "emailLabel": "E-Mail-Adresse",
+        "emailPlaceholder": "sie@example.com",
+        "timezoneLabel": "Ihre Zeitzone",
+        "timezoneDetected": "Aus Ihrem Browser erkannt",
+        "localeLabel": "Sprache",
+        "localeEn": "English",
+        "localeDe": "Deutsch",
+        "threadsLabel": "Einzelnen Konflikten folgen",
+        "threadsHint": "Optional. Sie bekommen tägliche Digests und SEV≥9-Alerts für gewählte Konflikte.",
+        "globalDigestLabel": "Globales Morning Briefing",
+        "globalDigestHint": "Tägliche Zusammenfassung aller Konflikte um 07:00 Ortszeit.",
+        "preferencesTitle": "Newsletter-Einstellungen",
+        "preferencesSaved": "Ihre Einstellungen wurden gespeichert.",
+        "perThreadDigest": "Tägliche Zusammenfassung",
+        "perThreadCritical": "Critical Alerts (SEV ≥ 9)",
+        "unsubscribeCta": "Von allen E-Mails abmelden",
+        "save": "Einstellungen speichern",
+        "submit": "Abonnieren",
+        "submitting": "Abonniere...",
+        "privacy": "Wir senden Ihnen eine Bestätigungs-E-Mail. Sie können sich jederzeit mit einem Klick abmelden.",
+        "successTitle": "Schauen Sie in Ihr Postfach",
+        "successBody": "Wir haben einen Bestätigungslink an {{email}} gesendet. Klicken Sie ihn innerhalb von 14 Tagen, um Ihr Abonnement zu aktivieren.",
+        "confirmedTitle": "Abonnement bestätigt",
+        "confirmedBody": "Alles bereit. Das nächste Morning Briefing erreicht Sie um 07:00 {{timezone}}.",
+        "unsubscribedTitle": "Sie wurden abgemeldet",
+        "unsubscribedBody": "Sie erhalten keine weiteren E-Mails von ClashMonitor. Sie können jederzeit wieder abonnieren.",
+        "invalidToken": "Dieser Link ist ungültig oder abgelaufen.",
+        "status": {
+            "pending": "Ausstehend",
+            "confirmed": "Bestätigt",
+            "unsubscribed": "Abgemeldet",
+            "bounced": "Bounced",
+            "complained": "Beschwerde"
+        }
+    }
+}
