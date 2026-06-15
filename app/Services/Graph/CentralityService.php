@@ -117,4 +117,84 @@ class CentralityService
 
         return $betweenness;
     }
+
+    /**
+     * PageRank centrality computed with the power method.
+     *
+     * Models a random surfer that with probability $damping follows an outgoing
+     * edge and otherwise teleports to a uniformly random node:
+     *
+     *     PR(v) = (1 - d)/n + d · Σ_{u → v} PR(u) / outdeg(u)
+     *
+     * Starting from a uniform distribution the iteration is repeated until no
+     * rank moves by more than $epsilon (or $maxIterations is reached). Rank held
+     * by dangling nodes (no out-edges) is redistributed uniformly so the result
+     * stays a probability distribution summing to 1.0. On an undirected graph the
+     * out-degree equals the neighbour count and in-links are the neighbours.
+     *
+     * Reference: Page, L., Brin, S., Motwani, R., Winograd, T. (1999),
+     * "The PageRank Citation Ranking: Bringing Order to the Web".
+     *
+     * @return array<string, float> node id => centrality score
+     */
+    public function pageRankCentrality(
+        Graph $graph,
+        float $damping = 0.85,
+        float $epsilon = 1e-10,
+        int $maxIterations = 100,
+    ): array {
+        $nodes = $graph->nodes();
+        $n = count($nodes);
+
+        if ($n === 0) {
+            return [];
+        }
+
+        $teleport = (1.0 - $damping) / $n;
+
+        $outDegree = [];
+        foreach ($nodes as $id) {
+            $outDegree[$id] = $graph->degree($id);
+        }
+
+        // Uniform starting distribution.
+        $rank = array_fill_keys($nodes, 1.0 / $n);
+
+        for ($iter = 0; $iter < $maxIterations; $iter++) {
+            // Rank trapped in dangling nodes is spread uniformly so the total
+            // stays exactly 1.0 instead of leaking away each iteration.
+            $danglingMass = 0.0;
+            foreach ($nodes as $id) {
+                if ($outDegree[$id] === 0) {
+                    $danglingMass += $rank[$id];
+                }
+            }
+
+            $base = $teleport + $damping * $danglingMass / $n;
+            $next = array_fill_keys($nodes, $base);
+
+            foreach ($nodes as $u) {
+                if ($outDegree[$u] === 0) {
+                    continue;
+                }
+                $share = $damping * $rank[$u] / $outDegree[$u];
+                foreach (array_keys($graph->neighbors($u)) as $v) {
+                    $next[$v] += $share;
+                }
+            }
+
+            // Converged once no node's rank changes by more than epsilon.
+            $maxDelta = 0.0;
+            foreach ($nodes as $id) {
+                $maxDelta = max($maxDelta, abs($next[$id] - $rank[$id]));
+            }
+            $rank = $next;
+
+            if ($maxDelta < $epsilon) {
+                break;
+            }
+        }
+
+        return $rank;
+    }
 }

@@ -131,3 +131,57 @@ describe('CentralityService::betweennessCentrality', function () {
         expect((new CentralityService())->betweennessCentrality(new Graph()))->toBe([]);
     });
 });
+
+describe('CentralityService::pageRankCentrality', function () {
+    it('distributes rank uniformly on a symmetric triangle', function () {
+        // Every node is structurally identical → equal PageRank = 1/3.
+        $g = new Graph();
+        $g->addEdge('A', 'B');
+        $g->addEdge('B', 'C');
+        $g->addEdge('C', 'A');
+
+        $scores = (new CentralityService())->pageRankCentrality($g);
+
+        expect($scores['A'])->toEqualWithDelta(1 / 3, 1e-6)
+            ->and($scores['B'])->toEqualWithDelta(1 / 3, 1e-6)
+            ->and($scores['C'])->toEqualWithDelta(1 / 3, 1e-6);
+    });
+
+    it('forms a probability distribution that sums to 1', function () {
+        // Holds even with the dangling isolated node E, thanks to the
+        // uniform redistribution of dangling mass.
+        $scores = (new CentralityService())->pageRankCentrality(fixtureGraph());
+
+        expect(array_sum($scores))->toEqualWithDelta(1.0, 1e-6);
+    });
+
+    it('ranks the most-connected node highest', function () {
+        $scores = (new CentralityService())->pageRankCentrality(fixtureGraph());
+
+        arsort($scores);
+        expect(array_key_first($scores))->toBe('A');
+    });
+
+    it('splits rank evenly between two mutually linked nodes', function () {
+        $g = new Graph();
+        $g->addEdge('A', 'B');
+
+        $scores = (new CentralityService())->pageRankCentrality($g);
+
+        expect($scores['A'])->toEqualWithDelta(0.5, 1e-6)
+            ->and($scores['B'])->toEqualWithDelta(0.5, 1e-6);
+    });
+
+    it('assigns all rank to the sole node of a single-node graph', function () {
+        $g = new Graph();
+        $g->addNode('only');
+
+        $scores = (new CentralityService())->pageRankCentrality($g);
+
+        expect($scores['only'])->toEqualWithDelta(1.0, 1e-6);
+    });
+
+    it('returns an empty result for an empty graph', function () {
+        expect((new CentralityService())->pageRankCentrality(new Graph()))->toBe([]);
+    });
+});
