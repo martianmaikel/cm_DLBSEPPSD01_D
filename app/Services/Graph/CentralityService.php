@@ -41,4 +41,80 @@ class CentralityService
 
         return $scores;
     }
+
+    /**
+     * Freeman-normalised betweenness centrality via Brandes' algorithm.
+     *
+     * For every source node it runs a BFS to count shortest paths and record
+     * the shortest-path DAG, then back-propagates path dependencies in reverse
+     * BFS order — yielding O(n·m) time instead of the naive O(n³) of explicit
+     * path enumeration. Reference: Brandes, U. (2001), "A faster algorithm for
+     * betweenness centrality", Journal of Mathematical Sociology 25(2), 163–177.
+     *
+     * Scores are normalised into [0.0, 1.0]. The undirected "divide by 2" and
+     * the (n-1)(n-2)/2 pair count cancel into a single (n-1)(n-2) divisor, which
+     * is also the correct normaliser for the directed case.
+     *
+     * @return array<string, float> node id => centrality score
+     */
+    public function betweennessCentrality(Graph $graph): array
+    {
+        $nodes = $graph->nodes();
+        $n = count($nodes);
+        $betweenness = array_fill_keys($nodes, 0.0);
+
+        // A node can only sit *between* two others when there are at least
+        // three nodes; this also guards the (n-1)(n-2) divisor against zero.
+        if ($n <= 2) {
+            return $betweenness;
+        }
+
+        foreach ($nodes as $source) {
+            // ── Phase 1: BFS shortest paths from $source ──
+            $stack = [];                              // nodes in BFS (non-decreasing distance) order
+            $predecessors = array_fill_keys($nodes, []);
+            $sigma = array_fill_keys($nodes, 0.0);    // number of shortest paths source → node
+            $sigma[$source] = 1.0;
+            $distance = array_fill_keys($nodes, -1);
+            $distance[$source] = 0;
+
+            $queue = [$source];
+            $head = 0;
+            while ($head < count($queue)) {
+                $v = $queue[$head++];
+                $stack[] = $v;
+                foreach (array_keys($graph->neighbors($v)) as $w) {
+                    // First discovery of $w → fix its distance and enqueue it.
+                    if ($distance[$w] < 0) {
+                        $distance[$w] = $distance[$v] + 1;
+                        $queue[] = $w;
+                    }
+                    // Another shortest path to $w that runs through $v.
+                    if ($distance[$w] === $distance[$v] + 1) {
+                        $sigma[$w] += $sigma[$v];
+                        $predecessors[$w][] = $v;
+                    }
+                }
+            }
+
+            // ── Phase 2: accumulate dependencies in reverse BFS order ──
+            $delta = array_fill_keys($nodes, 0.0);
+            for ($i = count($stack) - 1; $i >= 0; $i--) {
+                $w = $stack[$i];
+                foreach ($predecessors[$w] as $v) {
+                    $delta[$v] += ($sigma[$v] / $sigma[$w]) * (1.0 + $delta[$w]);
+                }
+                if ($w !== $source) {
+                    $betweenness[$w] += $delta[$w];
+                }
+            }
+        }
+
+        $scale = ($n - 1) * ($n - 2);
+        foreach ($betweenness as $id => $value) {
+            $betweenness[$id] = $value / $scale;
+        }
+
+        return $betweenness;
+    }
 }

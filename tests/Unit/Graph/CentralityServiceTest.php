@@ -71,3 +71,63 @@ describe('CentralityService::degreeCentrality', function () {
         expect($scores)->toBe(['only' => 0.0]);
     });
 });
+
+describe('CentralityService::betweennessCentrality', function () {
+    it('computes Freeman-normalised betweenness on a known graph', function () {
+        // A is the only cut vertex: it lies on the unique shortest paths
+        // B–D and C–D. Raw betweenness(A) = 2 (unordered pairs), normalised
+        // by (n-1)(n-2)/2 = 6 → 1/3. Every other node is on no shortest path
+        // between two *other* nodes.
+        $scores = (new CentralityService())->betweennessCentrality(fixtureGraph());
+
+        expect($scores['A'])->toEqualWithDelta(1 / 3, 1e-9)
+            ->and($scores['B'])->toBe(0.0)
+            ->and($scores['C'])->toBe(0.0)
+            ->and($scores['D'])->toBe(0.0)
+            ->and($scores['E'])->toBe(0.0);
+    });
+
+    it('scores the middle node of a path graph as 1.0', function () {
+        // X — Y — Z : Y sits on the only shortest path X–Z.
+        $g = new Graph();
+        $g->addEdge('X', 'Y');
+        $g->addEdge('Y', 'Z');
+
+        $scores = (new CentralityService())->betweennessCentrality($g);
+
+        expect($scores['Y'])->toBe(1.0)
+            ->and($scores['X'])->toBe(0.0)
+            ->and($scores['Z'])->toBe(0.0);
+    });
+
+    it('splits credit across equally short paths', function () {
+        // 4-cycle A-B-C-D-A: opposite corners have two equal shortest paths,
+        // so each intermediary carries half. By symmetry every node = 1/6.
+        $g = new Graph();
+        $g->addEdge('A', 'B');
+        $g->addEdge('B', 'C');
+        $g->addEdge('C', 'D');
+        $g->addEdge('D', 'A');
+
+        $scores = (new CentralityService())->betweennessCentrality($g);
+
+        expect($scores['A'])->toEqualWithDelta(1 / 6, 1e-9)
+            ->and($scores['B'])->toEqualWithDelta(1 / 6, 1e-9)
+            ->and($scores['C'])->toEqualWithDelta(1 / 6, 1e-9)
+            ->and($scores['D'])->toEqualWithDelta(1 / 6, 1e-9);
+    });
+
+    it('scores every node 0.0 when no node can be an intermediary', function () {
+        // n = 2 → (n-1)(n-2) = 0; the guard must avoid a division by zero.
+        $g = new Graph();
+        $g->addEdge('A', 'B');
+
+        $scores = (new CentralityService())->betweennessCentrality($g);
+
+        expect($scores)->toBe(['A' => 0.0, 'B' => 0.0]);
+    });
+
+    it('returns an empty result for an empty graph', function () {
+        expect((new CentralityService())->betweennessCentrality(new Graph()))->toBe([]);
+    });
+});
