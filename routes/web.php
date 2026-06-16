@@ -110,6 +110,7 @@ Route::prefix('api')->group(function () {
 
     // Relationship graph
     Route::get('/graph/global', [\App\Http\Controllers\Api\GraphApiController::class, 'globalGraph']);
+    Route::get('/graph/centrality', [\App\Http\Controllers\Api\CentralityController::class, 'index']);
     Route::get('/graph/node/{type}/{id}', [\App\Http\Controllers\Api\GraphApiController::class, 'node'])
         ->where(['type' => 'actor|country|conflict|event']);
 });
