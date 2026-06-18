@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\Graph\CentralityCache;
 use App\Services\Graph\CentralityService;
 use App\Services\Graph\GraphBuilderService;
 use App\Services\Graph\GraphResultAdapter;
@@ -21,6 +22,7 @@ class CentralityController extends Controller
         private readonly GraphBuilderService $builder,
         private readonly GraphResultAdapter $adapter,
         private readonly CentralityService $centrality,
+        private readonly CentralityCache $cache,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -36,15 +38,16 @@ class CentralityController extends Controller
         // Actor-only relationship graph — this feature ranks actor influence.
         $result = $this->builder->globalSnapshot(nodeTypes: ['actor'], topActors: $topActors);
         $graph = $this->adapter->toGraph($result);
+        $signature = $this->cache->signatureFor($graph);
 
         $requested = $metric === 'all' ? self::METRICS : [$metric];
         $scores = [];
         foreach ($requested as $name) {
-            $scores[$name] = match ($name) {
+            $scores[$name] = $this->cache->remember($name, $signature, fn () => match ($name) {
                 'degree' => $this->centrality->degreeCentrality($graph),
                 'betweenness' => $this->centrality->betweennessCentrality($graph),
                 'pagerank' => $this->centrality->pageRankCentrality($graph),
-            };
+            });
         }
 
         $nodes = [];
