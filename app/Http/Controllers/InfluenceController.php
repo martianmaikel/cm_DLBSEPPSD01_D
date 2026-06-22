@@ -25,4 +25,23 @@ class InfluenceController extends Controller
 
         return Inertia::render('Influence/Dashboard');
     }
+
+    public function compare(): Response
+    {
+        request()->attributes->set('seo', SeoMeta::make(
+            title: 'Compare Actor Influence',
+            description: 'Side-by-side comparison of conflict actors across degree, betweenness and PageRank centrality.',
+            canonical: url('/influence/compare'),
+            ogType: 'website',
+            ogImage: url('/images/og-banner.jpg'),
+            twitterCard: 'summary_large_image',
+            breadcrumbs: [
+                ['name' => 'ClashMonitor', 'url' => url('/')],
+                ['name' => 'Influence', 'url' => url('/influence')],
+                ['name' => 'Compare'],
+            ],
+        ));
+
+        return Inertia::render('Influence/Compare');
+    }
 }

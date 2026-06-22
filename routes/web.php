@@ -87,6 +87,7 @@ Route::get('/actors', [ActorController::class, 'index'])->name('actors.index');
 Route::get('/actor/{slug}', [ActorController::class, 'show'])->name('actors.show');
 Route::get('/graph', [GraphController::class, 'index'])->name('graph.index');
 Route::get('/influence', [\App\Http\Controllers\InfluenceController::class, 'index'])->name('influence.index');
+Route::get('/influence/compare', [\App\Http\Controllers\InfluenceController::class, 'compare'])->name('influence.compare');
 Route::get('/briefing/{date?}', [BriefingController::class, 'show']);
 Route::get('/digest', [DigestController::class, 'latest']);
 Route::get('/digest/{week}', [DigestController::class, 'show'])->where('week', '\d{4}-W\d{1,2}');
